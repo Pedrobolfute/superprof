@@ -31,20 +31,18 @@ def get_available_space(path="/"):
         print("Erro ao obter informações sobre o espaço disponível:", e)
         return None
 
-def fill_disk_slowly(file_path, duration_minutes):
+def fill_disk_slowly(file_path, duration_seconds):
     check_and_install_pv()
     
     available_kb = get_available_space("/")
     if available_kb is None:
         return
     
-    duration_seconds = duration_minutes * 60
-    
     # Calcular a taxa de preenchimento em KB/s
     rate_kb = available_kb // duration_seconds
 
     try:
-        command = f"(timeout {duration_minutes}m pv -L {rate_kb}k /dev/zero > {file_path}; rm {file_path})"
+        command = f"(timeout {duration_seconds}s pv -L {rate_kb}k /dev/zero > {file_path}; rm {file_path})"
         print(f"Executando comando: {command}")
         subprocess.run(command, shell=True, check=True)
         print("Espaço preenchido e arquivo removido com sucesso.")
@@ -70,18 +68,17 @@ def monitor_disk_usage(interval=5, duration=60, path="/"):
             print("Erro ao obter informações sobre o uso do disco.")
         time.sleep(interval)
 
-def fill_and_monitor(file_path, fill_duration_minutes, monitor_path="/home", monitor_interval=5):
-    fill_duration_seconds = fill_duration_minutes * 60
+def fill_and_monitor(file_path, fill_duration_seconds, monitor_path="/home", monitor_interval=5):
     monitor_thread = threading.Thread(target=monitor_disk_usage, args=(monitor_interval, fill_duration_seconds, monitor_path))
     
     # Inicia a thread de monitoramento
     monitor_thread.start()
     
     # Executa a função de preenchimento
-    fill_disk_slowly(file_path, fill_duration_minutes)
+    fill_disk_slowly(file_path, fill_duration_seconds)
     
     # Espera a thread de monitoramento terminar
     monitor_thread.join()
 
 # Exemplo de uso
-fill_and_monitor(f"{home_dir}/evento.txt", fill_duration_minutes=30, monitor_path="/home", monitor_interval=5)
+fill_and_monitor(f"{home_dir}/evento.txt", fill_duration_seconds=1800, monitor_path="/home", monitor_interval=5)
