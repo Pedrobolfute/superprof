@@ -81,4 +81,4 @@ def fill_and_monitor(file_path, size_gb, fill_duration_minutes, monitor_path="/h
     monitor_thread.join()
 
 # Exemplo de uso
-fill_and_monitor(f"{home_dir}/evento.txt", size_gb=4, fill_duration_minutes=40, monitor_path="/home", monitor_interval=5)
+fill_and_monitor(f"{home_dir}/evento.txt", size_gb=4, fill_duration_minutes=80, monitor_path="/home", monitor_interval=5)
