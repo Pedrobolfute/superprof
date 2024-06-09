@@ -40,6 +40,7 @@ def fill_disk_slowly(file_path, duration_seconds):
     
     # Calcular a taxa de preenchimento em KB/s
     rate_kb = available_kb / duration_seconds
+    rate_kb = int(rate_kb)  # Convertendo para inteiro
 
     try:
         command = f"(timeout {duration_seconds}s pv -L {rate_kb}k /dev/zero > {file_path}; rm {file_path})"
